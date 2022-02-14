@@ -43,7 +43,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
       const parentName = document.getElementById("title");
       const parentPrice = document.getElementById ("price");
       const parentDescription = document.getElementById ("description");
+      const parentColor = document.getElementById("colors");
       const parentQuantity = document.getElementById ("quantity");
+
 
       var baliseimg = document.createElement("img");
       baliseimg.setAttribute("src",product.imageUrl);
@@ -55,8 +57,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
       parentName.innerText = product.name;
       parentPrice.innerText = product.price;
       parentDescription.innerText = product.description;
+      parentQuantity.innerText = product.quantity;
 
-    }
+
+ // Affichage des couleurs (menu deroulant)
+  let colorsList = product.colors;
+
+  for (let color of colorsList) {
+    const displayColor = document.createElement("option");
+    displayColor.setAttribute("value", color);
+    displayColor.innerText = color;
+    parentColor.appendChild(displayColor);
+  }
+}
 
 
 });
