@@ -60,7 +60,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
       parentQuantity.innerText = product.quantity;
 
 
- // Affichage des couleurs (menu deroulant)
+
+ // Affichage des couleurs
   let colorsList = product.colors;
 
   for (let color of colorsList) {
@@ -71,5 +72,41 @@ document.addEventListener("DOMContentLoaded", function(event) {
   }
 }
 
+
+ // Gestion du panier
+const parentColor = document.getElementById("colors");
+const parentQuantity = document.getElementById ("quantity");
+
+// je configure un eventListener quand l'utilisateur clique sur ajouter au panier
+const addToCart = document.getElementById('addToCart');
+addToCart.addEventListener('click', (event) => {
+  event.preventDefault();
+
+// Declaration de la classe produit
+  class productClass {
+    constructor(id, name, color, qty, imgurl, price, alt) {
+      this.id = id;
+      this.name = name;
+      this.color = color;
+      this.qty = qty;
+      this.imgurl = imgurl;
+      this.price = price;
+      this.alt = alt;
+    }
+  }
+
+// Declaration d'une variable productInLocalStorage
+  let productInLocalStorage =  JSON.parse(localStorage.getItem('product'));
+
+// Ajout des produits selectionnés dans le local storage
+  const addProductLocalStorage = () => {
+    productInLocalStorage.push(productClass);
+    localStorage.setItem('product', JSON.stringify(productInLocalStorage));
+  }
+
+
+
+
+});
 
 });
