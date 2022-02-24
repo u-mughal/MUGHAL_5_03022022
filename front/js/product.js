@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function (event) {
 
   //-------------------fonction principale-------------------//
@@ -122,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       let productChoosen = new productClass(
         product._id,
         colorChoosen,
-        qtyChoosen
+        qtyChoosen,
       )
 
       if (colorChoosen != "" && qtyChoosen >= 1 && qtyChoosen <= 100) {
@@ -130,16 +131,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
         localStorage.setItem(
           product.name + " " + colorChoosen,
           JSON.stringify(productChoosen)
+
         )
+        alert('Ajout effectué.')
+
       } else {
         alert("tu t'est tromper ma caille");
       }
-
-
     })
-
-
-
   }
-
 });
