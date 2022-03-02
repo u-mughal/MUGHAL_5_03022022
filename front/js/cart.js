@@ -145,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
         let inputQty = inputevent.target.value;
 
+
         if (inputQty >= 1 && inputQty <= 100) {
           const productName = input
             .closest("div.cart__item__content")
@@ -184,6 +185,58 @@ document.addEventListener("DOMContentLoaded", function (event) {
     });
   }
 
+  //Instauration formulaire avec regex
+  function validationRegex(form) {
+    //Conditions regex string email et adresse
+    const stringRegex = /^[a-zA-Z-]+$/;
+    const emailRegex = /^\w+([.-]?\w+)@\w+([.-]?\w+).(.\w{2,3})+$/;
+    const addressRegex = /^[a-zA-Z0-9\s,.'-]{3,}$/;
+    let control = true;
+    //Si la valeur du formulaire n'est pas identique : MESSAGE D'ERREUR
+    if (!form.firstName.value.match(stringRegex)) {
+      document.getElementById("firstNameErrorMsg").innerHTML = "Merci de vérifier votre prénom !"
+      control = false;
+      // Sinon aucun message d'erreur
+    } else {
+      document.getElementById("firstNameErrorMsg").innerHTML = "";
+    }
+    if (!form.lastName.value.match(stringRegex)) {
+      document.getElementById("lastNameErrorMsg").innerText = "Merci de vérifier votre nom !";
+      control = false;
+    } else {
+      document.getElementById("lastNameErrorMsg").innerText = "";
+    }
+    if (!form.address.value.match(addressRegex)) {
+      document.getElementById("addressErrorMsg").innerText = "Merci de vérifier votre adresse !";
+      control = false;
+    } else {
+      document.getElementById("addressErrorMsg").innerText = "";
+    }
+    if (!form.city.value.match(stringRegex)) {
+      document.getElementById("cityErrorMsg").innerText = "Merci de vérifier le nom de votre ville !";
+      control = false;
+    } else {
+      document.getElementById("cityErrorMsg").innerText = "";
+    }
+    if (!form.email.value.match(emailRegex)) {
+      document.getElementById("emailErrorMsg").innerText = "Merci de vérifier votre email";
+      control = false;
+    } else {
+      document.getElementById("emailErrorMsg").innerText = "";
+    }
+
+    if (control) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  //Requête HTTP avec fetch POST API si regex valid
+  function validation() {
+    // ecoute du bouton commande
+    let orderButton = document.getElementById("order");
+  }
 
 
 });
