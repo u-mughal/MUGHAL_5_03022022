@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   main();
 
 
-  // recuperation localstorage et du tableau localstorage lorsqu'il y a une valeur
+  // recuperation tableau localstorage tant qu'il y a une valeur
   function getLocalStorageProduct() {
 
     let getLocalStorage = [];
@@ -132,8 +132,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     // Fonction si changement dans notre input quantity.
     ecoutequantity(AllProducts);
     // Fonction si on veux supprimer un éléments de la liste.
-    //ecoutedeleteProduct(AllProducts);
+    ecoutedeleteProduct(AllProducts);
   }
+
 
   function ecoutequantity(AllProducts) {
 
@@ -148,12 +149,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
           const productName = input
             .closest("div.cart__item__content")
             .querySelector("div.cart__item__content__titlePrice > h2").innerText;
-
-          // une fois les valeurs changer dans le localstorage
-
-          // on change les valeurs dans le array allproducts
-
-          // on refait appel à la fonction displaytotalprice
+          let localStorageArray = JSON.parse(localStorage.getItem(productName));
+          localStorageArray.qty = inputQty;
+          localStorage.setItem('productName', JSON.stringify(localStorageArray));
+          let AllProducts = getLocalStorageProduct();
+          displayTotalPrice(AllProducts);
         } else {
           alert("Choisis une bonne quantité trou de fesse");
         }
@@ -161,15 +161,29 @@ document.addEventListener("DOMContentLoaded", function (event) {
     });
   }
 
-  //Instauration formulaire avec regex
-  function Form() {
-    // Ajout des Regex
-    let form = document.querySelector(".cart__order__form");
 
-    //Création expressions régulières
-    let emailRegExp = new RegExp('^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$');
-    let charRegExp = new RegExp("^[a-zA-Z ,.'-]+$");
-    let addressRegExp = new RegExp("^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+");
+
+  // suppression d'un element dans le panier
+  function ecoutedeleteProduct() {
+    let deleteLink = document.querySelectorAll(".deleteItem");
+    // ecoute pour chaque lien "supprimer"
+    deleteLink.forEach(function (input) {
+      input.addEventListener("click", function () {
+        // recuperation cle pour localstorage
+        const productName = input
+          .closest("div.cart__item__content")
+          .querySelector("div.cart__item__content__titlePrice > h2").innerText;
+        // suppression cle localstorage
+        localStorage.removeItem(productName);
+        // suppression du noeud
+        input.closest("div.cart__item__content").parentNode.remove();
+        let localStorageArray = getLocalStorageProduct();
+        displayTotalPrice(localStorageArray);
+        alert("Votre produit a bien été supprimé !")
+      });
+    });
   }
+
+
 
 });
