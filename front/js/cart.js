@@ -147,14 +147,24 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
 
         if (inputQty >= 1 && inputQty <= 100) {
+
           const productName = input
             .closest("div.cart__item__content")
             .querySelector("div.cart__item__content__titlePrice > h2").innerText;
+
           let localStorageArray = JSON.parse(localStorage.getItem(productName));
+
           localStorageArray.qty = inputQty;
-          localStorage.setItem('productName', JSON.stringify(localStorageArray));
-          let AllProducts = getLocalStorageProduct();
+
+          localStorage.setItem(productName, JSON.stringify(localStorageArray));
+
+          const results = AllProducts.find(AllProduct => AllProduct.name === localStorageArray.name && AllProduct.colors === localStorageArray.color);
+
+          results.qty = inputQty;
+
+
           displayTotalPrice(AllProducts);
+
         } else {
           alert("Choisis une bonne quantité trou de fesse");
         }
@@ -162,25 +172,33 @@ document.addEventListener("DOMContentLoaded", function (event) {
     });
   }
 
-
-
   // suppression d'un element dans le panier
-  function ecoutedeleteProduct() {
+  function ecoutedeleteProduct(AllProducts) {
+
     let deleteLink = document.querySelectorAll(".deleteItem");
-    // ecoute pour chaque lien "supprimer"
+
     deleteLink.forEach(function (input) {
       input.addEventListener("click", function () {
-        // recuperation cle pour localstorage
+
         const productName = input
           .closest("div.cart__item__content")
           .querySelector("div.cart__item__content__titlePrice > h2").innerText;
-        // suppression cle localstorage
+
+        let localStorageArray = JSON.parse(localStorage.getItem(productName));
+
         localStorage.removeItem(productName);
-        // suppression du noeud
+
         input.closest("div.cart__item__content").parentNode.remove();
-        let localStorageArray = getLocalStorageProduct();
-        displayTotalPrice(localStorageArray);
-        alert("Votre produit a bien été supprimé !")
+
+        const result = AllProducts.find(AllProduct => AllProduct.name === localStorageArray.name && AllProduct.colors === localStorageArray.color);
+        console.log(result);
+
+        AllProducts = AllProducts.filter(AllProduct => AllProduct !== result);
+
+        ecoutequantity(AllProducts);
+        displayTotalPrice(AllProducts);
+
+
       });
     });
   }
@@ -236,6 +254,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   function validation() {
     // ecoute du bouton commande
     let orderButton = document.getElementById("order");
+
   }
 
 

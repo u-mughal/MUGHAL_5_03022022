@@ -74,10 +74,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
   // Declaration de la classe produit
   class productClass {
-    constructor(id, color, qty) {
+    constructor(id, color, qty, name) {
       this.id = id;
       this.color = color;
       this.qty = qty;
+      this.name = name;
     }
   }
 
@@ -123,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
         product._id,
         colorChoosen,
         qtyChoosen,
+        product.name
       )
 
       if (colorChoosen != "" && qtyChoosen >= 1 && qtyChoosen <= 100) {
