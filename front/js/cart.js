@@ -3,22 +3,25 @@ document.addEventListener("DOMContentLoaded", function (event) {
   //-------------------fonction principale-------------------//
   //--------------------------------------------------------//
   async function main() {
-
+    // on déclare un tableau vide de l'API
     let ApiArray = [];
-
-    let localStorageArray = getLocalStorageProduct(); // On recupere le localstorage
-
+    // on recupere le localstorage
+    let localStorageArray = getLocalStorageProduct();
+    // recuperation tableau localstorage tant qu'il y a une valeur
     for (let i = 0; i < localStorageArray.length; i++) {
       ApiArray.push(await GetApi(localStorageArray[i]));
     }
 
     let AllProducts = ConcatArray(localStorageArray, ApiArray);
-
+    // affichage du panier du localstorage 
     displayCart(AllProducts);
-
+    // affichage du calcul qté + prix du localstorage
     displayTotalPrice(AllProducts);
-
+    // fonction d'écoute principale
     Listen(AllProducts);
+
+    // appel de la fonction verification regex puis fetch POST API si regex valide
+    validation();
   }
 
   main();
@@ -38,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
   }
 
+  // communication API avec le localstorage ID
   function GetApi(localStorageArray) {
 
     return fetch("http://localhost:3000/api/products/" + localStorageArray.id)
@@ -52,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       })
   }
 
+  // concaténation de l'array du localstorage et de l'API
   function ConcatArray(localStorageArray, ApiArray) {
 
     let AllProducts = [];
@@ -107,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 
-
+  // fonction d'affichage du calcul qté + prix du localstorage
   function displayTotalPrice(AllProducts) {
 
     let totalPrice = 0;
@@ -135,11 +140,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
     ecoutedeleteProduct(AllProducts);
   }
 
-
+  // ecoute de la quantité pour qté total + prix
   function ecoutequantity(AllProducts) {
 
     let qtyinput = document.querySelectorAll(".itemQuantity");
-
+    // ecoute pour chaque element input
     qtyinput.forEach(function (input) {
       input.addEventListener("change", function (inputevent) {
 
@@ -147,22 +152,26 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
 
         if (inputQty >= 1 && inputQty <= 100) {
-
+          // recuperation cle pour localstorage
           const productName = input
             .closest("div.cart__item__content")
             .querySelector("div.cart__item__content__titlePrice > h2").innerText;
-
+          // enregistrement qte apres modif input
           let localStorageArray = JSON.parse(localStorage.getItem(productName));
 
           localStorageArray.qty = inputQty;
-
+          // injection qté dans localstorage
           localStorage.setItem(productName, JSON.stringify(localStorageArray));
 
+          // méthode find pour parler à Array Allproducts
+          // examine l'array Allproducts on cherche à comparer chaque element du tableau entre de Allproduct et Localstorage et s'arretera quand le premier element sera vrai. 
+          // ici on verifie si les opérandes sont égaux
+          // ça va permettre de modifier l'article du localstorage
           const results = AllProducts.find(AllProduct => AllProduct.name === localStorageArray.name && AllProduct.colors === localStorageArray.color);
-
+          // on change les valeurs dans le Array Allproducts
           results.qty = inputQty;
 
-
+          // on refait appel à la fonction displaytotalprice
           displayTotalPrice(AllProducts);
 
         } else {
@@ -177,24 +186,33 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     let deleteLink = document.querySelectorAll(".deleteItem");
 
+    // ecoute pour chaque lien "supprimer"
     deleteLink.forEach(function (input) {
       input.addEventListener("click", function () {
 
+        // recuperation cle pour localstorage
         const productName = input
           .closest("div.cart__item__content")
           .querySelector("div.cart__item__content__titlePrice > h2").innerText;
 
+        // enregistrement de notre valeur
         let localStorageArray = JSON.parse(localStorage.getItem(productName));
 
+        // suppression du productName se trouvant dans le localstorage (ici la clé est productName)
         localStorage.removeItem(productName);
 
+        // suppression du noeud
         input.closest("div.cart__item__content").parentNode.remove();
 
+        // comparer chaque element du tableau afin de modifier l'article du localstorage
         const result = AllProducts.find(AllProduct => AllProduct.name === localStorageArray.name && AllProduct.colors === localStorageArray.color);
-        console.log(result);
 
+        // récuperation de la valeur (closest)
+        // nous retourne un nouveau tableau contenant tous les éléments du tableau d'origine
         AllProducts = AllProducts.filter(AllProduct => AllProduct !== result);
 
+
+        //on fais appel aux deux fonctions
         ecoutequantity(AllProducts);
         displayTotalPrice(AllProducts);
 
@@ -250,12 +268,64 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 
-  //Requête HTTP avec fetch POST API si regex valid
+  // Requête HTTP avec fetch POST API si regex valid
   function validation() {
     // ecoute du bouton commande
     let orderButton = document.getElementById("order");
+    orderButton.addEventListener("click", function (event) {
+      let form = document.querySelector(".cart__order__form");
+      event.preventDefault();
 
-  }
+      if (localStorage.length == 0) {
+        // verification condition regex
+        if (validationRegex(form)) {
 
+          // recuperation du form
+          let infoForm = {
+            firstName: form.firstName.value,
+            lastName: form.lastName.value,
+            address: form.address.value,
+            city: form.city.value,
+            email: form.email.value,
+          };
 
+          let product = [];
+          // recuperation tableau localstorage tant qu'il y a une valeur
+          for (let i = 0; i < localStorage.length; i++) {
+            product[i] = JSON.parse(localStorage.getItem(localStorage.key(i))).id;
+          }
+
+          // recuperation formulaire validé + 
+          const order = {
+            contact: infoForm,
+            products: product,
+          };
+
+          // appel de l'api par la méthode POST
+          fetch('http://localhost:3000/api/products/order', {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(order),
+          })
+
+            // stocker order id dans l'url
+            .then((res) => res.json())
+            .then(function (data) {
+              //envoie vers la page confirmation avec id de la commande concaténé
+              window.location.href = "confirmation.html?id=" + orderId;
+            })
+            .catch(function (err) {
+              alert("Problème avec la confirmation de commande");
+            });
+
+        } else {
+          event.preventDefault();
+          alert("Formulaire mal rempli et panier vide");
+        }
+      }
+    })
+  };
 });
