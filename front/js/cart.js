@@ -109,6 +109,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
               </div>
             </article>`
       );
+
+
     }
   }
 
@@ -273,10 +275,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
     // ecoute du bouton commande
     let orderButton = document.getElementById("order");
     orderButton.addEventListener("click", function (event) {
+
       let form = document.querySelector(".cart__order__form");
       event.preventDefault();
 
-      if (localStorage.length == 0) {
+      if (localStorage.length !== 0) {
+
         // verification condition regex
         if (validationRegex(form)) {
 
@@ -295,27 +299,27 @@ document.addEventListener("DOMContentLoaded", function (event) {
             product[i] = JSON.parse(localStorage.getItem(localStorage.key(i))).id;
           }
 
-          // recuperation formulaire validé + 
+          // recuperation formulaire validé +  
           const order = {
             contact: infoForm,
             products: product,
           };
 
-          // appel de l'api par la méthode POST
-          fetch('http://localhost:3000/api/products/order', {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
+          const options = {
+            method: "POST",
             body: JSON.stringify(order),
-          })
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          };
 
-            // stocker order id dans l'url
+          // appel de l'api par la méthode POST
+          fetch("http://localhost:3000/api/products/order", options)
             .then((res) => res.json())
             .then(function (data) {
               //envoie vers la page confirmation avec id de la commande concaténé
-              window.location.href = "confirmation.html?id=" + orderId;
+              window.location.href = "confirmation.html?id=" + data.orderId;
             })
             .catch(function (err) {
               alert("Problème avec la confirmation de commande");
@@ -323,8 +327,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
         } else {
           event.preventDefault();
-          alert("Formulaire mal rempli et panier vide");
+          alert("Formulaire mal rempli");
         }
+      } else {
+        event.preventDefault();
+        alert("panier vide");
       }
     })
   };
