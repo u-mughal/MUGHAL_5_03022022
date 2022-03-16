@@ -1,3 +1,6 @@
+/**
+ *
+ */
 function main() {
     // recuperation element url
     const url = new URL(window.location.href);

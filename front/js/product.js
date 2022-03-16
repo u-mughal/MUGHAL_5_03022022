@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
         alert('Ajout effectué.')
 
       } else {
-        alert("tu t'est tromper ma caille");
+        alert("tu t'est tromper");
       }
     })
   }

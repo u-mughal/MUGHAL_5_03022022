@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
   // recuperation produit du localstorage (panier) et affichage
   function displayCart(AllProducts) {
-    // boucle for of pour afficher chaquer produit
+    // boucle for of pour afficher chaque produit
     for (product of AllProducts) {
       const element = document.getElementById("cart__items");
       element.insertAdjacentHTML(
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
           displayTotalPrice(AllProducts);
 
         } else {
-          alert("Choisis une bonne quantité trou de fesse");
+          alert("Choisis une bonne quantité");
         }
       })
     });
@@ -299,12 +299,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
             product[i] = JSON.parse(localStorage.getItem(localStorage.key(i))).id;
           }
 
-          // recuperation formulaire validé +  
+          // recuperation formulaire validé +  id des produits dans order
           const order = {
             contact: infoForm,
             products: product,
           };
 
+          // POST du formulaire client + id produits vers API
           const options = {
             method: "POST",
             body: JSON.stringify(order),
